@@ -14,13 +14,13 @@ module.exports = function (grunt) {
 
   // Project configuration.
   grunt.initConfig({
-    // Configuration to be run (and then tested).
     raygun_deployment: {
       options: {
         // You need to fill this in with your own data
         // Alternatively, set the RAYGUN_APIKEY and RAYGUN_AUTHTOKEN environment variables
         raygunApiKey: 'YOUR APPLICATIONS API KEY',
-        raygunAuthToken: 'YOUR EXTERNAL AUTH TOKEN'
+        raygunAuthToken: 'YOUR EXTERNAL AUTH TOKEN',
+        version : 'VERSION:HERE'
       }
     }
   });

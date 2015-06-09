@@ -16,9 +16,7 @@ module.exports = function (grunt) {
     var finishedTask = this.async(), end, send, generate;
 
     var options = this.options({
-      release: 'Release.yaml',
-      raygunApiUri: 'https://app.raygun.io',
-      useGit: true
+      raygunApiUri: 'https://app.raygun.io'
     });
 
     if(!options.raygunApiKey && !process.env.RAYGUN_APIKEY){
@@ -30,17 +28,21 @@ module.exports = function (grunt) {
       return;
     }
 
+    if(!options.release || !options.release.version){
+      grunt.fatal('Required option release.version is missing.');
+      return;
+    }
+
     var apiKey = options.raygunApiKey || process.env.RAYGUN_APIKEY;
     var authToken = options.raygunAuthToken || process.env.RAYGUN_AUTHTOKEN;
 
-    generate = function(release, gitHash) {
+    generate = function() {
       var deployment = {
         apiKey: apiKey,
-        version: release.version,
-        ownerName: release.ownerName,
-        emailAddress: release.emailAddress,
-        comment: release.notes,
-        scmIdentifier: gitHash
+        version: options.release.version,
+        ownerName: options.release.ownerName || "",
+        emailAddress: options.release.emailAddress || "" ,
+        comment: options.release.notes || ""
       };
       send(deployment);
     };
@@ -69,21 +71,8 @@ module.exports = function (grunt) {
       }
     };
 
-    var release = grunt.file.readYAML(options.release);
+    generate();
 
-    if(options.useGit) {
-      grunt.util.spawn({
-        cmd: 'git',
-        args: ['rev-parse', '--verify', 'HEAD'],
-        grunt: false,
-        fallback: ''
-      }, function(error, result) {
-        var gitHash = String(result);
-        generate(release, gitHash);
-      });
-    } else {
-      generate(release, '');
-    }
   });
 
 };
